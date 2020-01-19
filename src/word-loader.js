@@ -1,7 +1,13 @@
 (function(){
     var WordLoader = function(element, args) {
         args = args || {};
-        var _this = this;
+        var _this = this,
+
+            // to prevent infinite loop in avoid check
+            avoidCount = 0; 
+            maxAvoidPerIteration = 10,
+
+            avoidAreaCache = null;
 
         // configuration
         const defaults = {
@@ -48,7 +54,22 @@
 
             // event on wich hide the loader 
             // (can be load or DOMContentLoaded or any custom event)
-            hideOn: "load"
+            hideOn: "load",
+
+            // area where words cannot be displayed
+            /* 
+                example config.
+                x,y,width,height can be % or px
+                {
+                    center: {
+                        x: "50%",
+                        y: "50%"
+                    },
+                    width: "10%",
+                    height: "10%",
+                }
+            */ 
+            avoid: null
         };
         
         // populate options with
@@ -166,19 +187,30 @@
             }
         }
 
+        if (options.avoid) {
+            // precalculate avoid area
+            try {
+                calculateAvoidArea();
+            } catch (e) {
+                console.error("WordLoader: Wrong avoid option configuration", e);
+            }
+        }
+
         // methods
         this.stopLoop = function() {
             doStop = true;
             element.classList.add("hidden");
             clearInterval(forceStopTimeout);
 
-            if (!options.debug) {
-                setTimeout(function(){
+            setTimeout(function(){
+                if (!options.debug) {
                     element.parentElement.removeChild(element);
-                }, options.overlayFadingDuration);
-            } else {
-                console.debug("WordLoader: stopped and in debug mode", this);
-            }
+                } else {
+                    element.style.zIndex = -1;
+                    console.debug("WordLoader: stopped and in debug mode", this);
+                }
+            }, options.overlayFadingDuration);
+        
         }
 
         function stopOnEvent() {
@@ -226,6 +258,9 @@
 
                 currentShowedWord = fetchWordToShow();
 
+                // reset avoid count per iteration
+                avoidCount = 0;
+                
                 // generate coords random
                 var pos = getRandomPos();
 
@@ -247,6 +282,105 @@
             }, options.fadingDuration);
         }
 
+        function pxToPercentual(px) {
+            var pxVal = parseInt(px);
+            return pxVal / (window.innerWidth/100);
+        }
+
+        function calculateAvoidArea() {
+            // transform all in %
+            var centerX = options.avoid.center.x.indexOf('%') ? parseInt(options.avoid.center.x) : pxToPercentual(options.avoid.center.x);
+            var centerY = options.avoid.center.y.indexOf('%') ? parseInt(options.avoid.center.y) : pxToPercentual(options.avoid.center.y);
+            var halfW = (options.avoid.width.indexOf('%') ? parseInt(options.avoid.width) : pxToPercentual(options.avoid.width)) / 2;
+            var halfH = (options.avoid.height.indexOf('%') ? parseInt(options.avoid.height) : pxToPercentual(options.avoid.height)) / 2;
+
+            avoidAreaCache = {
+                minX: centerX - halfW,
+                maxX: centerX + halfW,
+                minY: centerY - halfH,
+                maxY: centerY + halfH
+            };
+
+            // check for validity: if avoidArea is greater than rangeAvailableFromCenter
+            // we cannot display words!
+            if (options.rangeAvailableFromCenter / 2 <= (50-avoidAreaCache.minX+5) 
+                || options.rangeAvailableFromCenter / 2 <= (50-avoidAreaCache.minY+5)) {
+                console.error("WordLoader: avoid area is too big respect of the allowed area. Avoid option will be disabled, increase rangeAvailableFromCenter or decrease the avoid area");
+                options.avoid = false;
+            }
+        }
+
+        function showAvoidArea() {
+            if (!options.avoid) {
+                console.debug("WordLoader: no avoid setting defined");
+                return;
+            }
+
+            var avoidAreaElement = document.createElement('div');
+            avoidAreaElement.style.position = 'absolute';
+            avoidAreaElement.style.top = avoidAreaCache.minY + '%';
+            avoidAreaElement.style.left = avoidAreaCache.minX + '%';
+            avoidAreaElement.style.width = (avoidAreaCache.maxX - avoidAreaCache.minX) + '%';
+            avoidAreaElement.style.height = (avoidAreaCache.maxY - avoidAreaCache.minY) + '%';
+            avoidAreaElement.style.zIndex = 999999;
+            avoidAreaElement.style.background = 'rgba(255,0,0,.5)';
+            avoidAreaElement.style.padding = '.5em';
+            avoidAreaElement.style.fontSize = '.8em';
+            avoidAreaElement.style.boxSizing = 'border-box';
+
+            avoidAreaElement.innerText = "This is the Avoid Area";
+
+            element.appendChild(avoidAreaElement);
+        }
+
+        function isBetween(x, bound0, bound1) {
+            return x >= bound0 && x <= bound1;
+        }
+
+        function isInAvoidArea(x, y, word) {
+            if (!options.avoid || avoidCount >= maxAvoidPerIteration) {
+                return false;
+            }
+
+            avoidCount++;
+            
+            if (
+                    isBetween(x, avoidAreaCache.minX, avoidAreaCache.maxX)
+                    &&
+                    isBetween(y, avoidAreaCache.minY, avoidAreaCache.maxY)
+                ) {
+                return true;
+            }
+
+            // calculate word dimension
+            var wordEl = document.createElement('div');
+            wordEl.innerText = word;
+            wordEl.className = options.wordClasses.replace(/ /g, '.');
+            wordEl.style.zIndex = -9;
+            wordEl.style.top = '-99vw';
+            wordEl.style.left = '-99vh';
+            element.appendChild(wordEl);
+
+            // multiply by 1.5 to keep in mind the transform:scale(1.5) factor
+            // without waiting for the transition to end
+            var wordSize = {
+                width: pxToPercentual(wordEl.offsetWidth * 1.5),
+                height: pxToPercentual(wordEl.offsetHeight * 1.5),
+            };
+
+            element.removeChild(wordEl);
+
+            // check if only a segment overlap with the avoid area
+            if (x < avoidAreaCache.maxX && x + wordSize.width > avoidAreaCache.minX 
+                &&
+                y < avoidAreaCache.maxY && y + wordSize.height > avoidAreaCache.minY
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
         function getRandomPos() {
             var r = options.rangeAvailableFromCenter / 2;
             var x = randBetween(50 - r, 50 + r);
@@ -265,6 +399,11 @@
                     x: x,
                     y: y
                 }
+            }
+
+            if (isInAvoidArea(x, y, currentShowedWord)) {
+                console.debug("WordLoader: avoiding!", avoidCount);
+                return getRandomPos();
             }
 
             return {
@@ -296,11 +435,17 @@
         // add public methods for debug
         if (options.debug) {
             this.options = options;
+            this.element = element;
+
             this.show = function() {
                 doStop = false;
+                element.removeAttribute("style");
                 element.classList.remove("hidden");
                 showWord();
             };
+
+            // show avoid area
+            showAvoidArea();
 
             // expose this istance as public in window object
             window.wloaders ? window.wloaders.push(this) : window.wloaders = [this];

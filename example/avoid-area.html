@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="assets/example.css" />
+        <link rel="stylesheet" href="../src/word-loader.css" />
+    </head>
+    <body>
+        <div id="main">
+            <h1>Avoid Area: force WordLoader to avoid declared area</h1>
+            <code>new WordLoader('word-loader', {
+                    avoid: {
+                        center: {
+                            x: "50%",
+                            y: "50%"
+                        },
+                        width: "30%",
+                        height: "30%"
+                    },
+                    debug: true
+                })</code>
+            <img src="imgs/img2.jpg" />
+        </div>
+
+        <div id="word-loader" words="[&quot;Space&quot;,&quot;Universe&quot;,&quot;Stars&quot;,&quot;Sun&quot;,&quot;Earth&quot;,&quot;Milky Way&quot;,&quot;Supernova&quot;,&quot;Cosmic Rays&quot;]"></div>
+
+        <script type="text/javascript" onload="initWL()" defer async src="../src/word-loader.js"></script>
+
+        <script>
+        function initWL(){
+            new WordLoader('word-loader', {
+                avoid: {
+                    center: {
+                        x: '50%',
+                        y: '50%'
+                    },
+                    width: "30%",
+                    height: "30%"
+                },
+                debug: true
+            });
+        }
+
+        // activate debug show
+        window.addEventListener("load", function(){
+            setTimeout(function () {
+                alert("In 1 second the loader will be forced-shown to visualize the avoid area in debug mode. Click with the mouse everywhere inside the page");
+                setTimeout(function(){
+                    document.body.addEventListener('click', function(){
+                        wloaders[0].stopLoop();
+                    })
+                    wloaders[0].show();
+                }, 1000);
+            }, 1000);
+        });
+        </script>
+    </body>
+</html>
