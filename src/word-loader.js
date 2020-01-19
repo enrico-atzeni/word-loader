@@ -402,7 +402,6 @@
             }
 
             if (isInAvoidArea(x, y, currentShowedWord)) {
-                console.debug("WordLoader: avoiding!", avoidCount);
                 return getRandomPos();
             }
 

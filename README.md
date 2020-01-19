@@ -81,6 +81,21 @@ debug: false,
 // event on wich hide the loader 
 // (can be load or DOMContentLoaded or any custom event)
 hideOn: "load"
+
+// area where words cannot be displayed
+/* 
+    example config.
+    x,y,width,height can be % or px
+    {
+        center: {
+            x: "50%",
+            y: "50%"
+        },
+        width: "10%",
+        height: "10%",
+    }
+*/ 
+avoid: null
 ```
 
 ## Advanced usage examples
@@ -97,4 +112,20 @@ This will show the Word Loader for a minimum of 3 seconds, even if the page has 
 new WordLoader('word-loader', {debug: true})
 ```
 This mode doesn't remove the DOM element after hiding it and expose the instance publicy in the `window` object, so you can access its properties, reshow it and fix eventual conflicts with other code in your page.
+
+### Avoiding an area of the page
+```
+new WordLoader('word-loader', {
+    avoid: {
+        center: {
+            x: "50%",
+            y: "50%"
+        },
+        width: "25%",
+        height: "25%",
+    }
+})
+```
+Prevent words to appear in a particulare region of the page. Word box size will be automatically calculated on runtime, so keep in mind when adding a lot of effects and transition to the word element.
+I suggest to enable the debug mode while trying this property because the avoid area will be shown in the page as a red transparent box.
 
