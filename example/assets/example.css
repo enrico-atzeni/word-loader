@@ -1,0 +1,20 @@
+body {
+    margin: 0;
+    background-image: url('../imgs/img1.jpg');
+    background-color: #080811;
+    background-size: cover;
+    color: #d9cdcf;
+    font-family: Arial;
+    padding: 2em;
+}
+img {
+    max-width: 100%;
+    height: auto;
+}
+code {
+    padding: 2em;
+    background: #333;
+    margin: 1em 0;
+    display: block;
+    color: #9bf;
+}

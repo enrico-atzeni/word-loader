@@ -1,0 +1,25 @@
+#word-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #353a3e;
+    cursor: progress;
+}
+#word-loader .word-word {
+    position: absolute;
+    z-index: 99999;
+    color: #ddd;
+    opacity: 0;
+    cursor: none;
+
+    transition: opacity .3s ease, transform .3s ease;
+    -moz-transition: opacity .3s ease, transform .3s ease;
+    -webkit-transition: opacity .3s ease, transform .3s ease;
+}
+#word-loader .word-word.shown {
+    opacity: 1;
+    transform: scale(1.5);
+}

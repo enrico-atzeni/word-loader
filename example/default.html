@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="assets/example.css" />
+        <link rel="stylesheet" href="../src/word-loader.css" />
+    </head>
+    <body>
+        <div id="main">
+            <h1>Default WordLoader settings</h1>
+            <code>new WordLoader('word-loader')</code>
+            <p>This is an example page, you can disable cache from your browser to see at each refresh the loader!</p>
+            <img src="imgs/img2.jpg" />
+        </div>
+
+        <div id="word-loader" words="[&quot;Space&quot;,&quot;Universe&quot;,&quot;Stars&quot;,&quot;Sun&quot;,&quot;Earth&quot;,&quot;Milky Way&quot;,&quot;Supernova&quot;,&quot;Cosmic Rays&quot;]"></div>
+
+        <script type="text/javascript" onload="new WordLoader('word-loader', {debug:true})" defer async src="../src/word-loader.js"></script>
+    </body>
+</html>

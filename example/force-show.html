@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="assets/example.css" />
+        <link rel="stylesheet" href="../src/word-loader.css" />
+    </head>
+    <body>
+        <div id="main">
+            <h1>Force Show: force WordLoader to stay in page at least desired time</h1>
+            <code>new WordLoader('word-loader', {minimumTime: 4000})</code>
+            <img src="imgs/img2.jpg" />
+        </div>
+
+        <div id="word-loader" words="[&quot;Space&quot;,&quot;Universe&quot;,&quot;Stars&quot;,&quot;Sun&quot;,&quot;Earth&quot;,&quot;Milky Way&quot;,&quot;Supernova&quot;,&quot;Cosmic Rays&quot;]"></div>
+
+        <script type="text/javascript" onload="new WordLoader('word-loader', {minimumTime: 4000})" defer async src="../src/word-loader.js"></script>
+    </body>
+</html>
