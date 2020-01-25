@@ -23,3 +23,45 @@
     opacity: 1;
     transform: scale(1.5);
 }
+
+
+
+#word-loader .wl-load {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 99999;
+    margin: -10px 0 0 -52px;    
+}
+.wl-load > div {
+  display: inline-block;
+  background: #ddd;
+  width: 20px;
+  height: 20px;
+  border-radius: 40px;
+  opacity: 0;
+  margin: 0 3px;
+  
+  animation: wlloading .8s infinite ease;
+  -webkit-animation: wlloading .8s infinite ease;
+}
+.wl-load > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.wl-load > div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.wl-load > div:nth-child(4) {
+  animation-delay: 0.6s;
+}
+@keyframes wlloading {
+  from {opacity: 0; transform: scale(0)}
+  75% {opacity: 1;}
+  to {opacity: 0; transform: scale(1.2)}
+}
+
+@-webkit-keyframes wlloading {
+  from {opacity: 0; transform: scale(0)}
+  75% {opacity: 1;}
+  to {opacity: 0; transform: scale(1.2)}
+}

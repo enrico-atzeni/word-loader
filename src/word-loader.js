@@ -69,7 +69,17 @@
                     height: "10%",
                 }
             */ 
-            avoid: null
+            avoid: {
+                center: {
+                    x: "50%",
+                    y: "50%"
+                },
+                width: "15%",
+                height: "6%"
+            },
+
+            // to show an additional standard loader in the middle of the page
+            centerLoader: true
         };
         
         // populate options with
@@ -138,6 +148,11 @@
             element.appendChild(domWords[w]);
         }
 
+        // insert graphic loader in page
+        if (options.centerLoader) {
+            element.insertAdjacentHTML("afterbegin", '<div class="wl-load"><div></div><div></div><div></div><div></div></div>');
+        }
+        
         // add animation timing to page
         var timing_ms = options.fadingDuration / 1000, // seconds to milliseconds
             css = document.createElement('style');

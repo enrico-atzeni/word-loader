@@ -95,7 +95,17 @@ hideOn: "load"
         height: "10%",
     }
 */ 
-avoid: null
+avoid: {
+    center: {
+        x: "50%",
+        y: "50%"
+    },
+    width: "15%",
+    height: "6%"
+},
+
+// to show an additional standard loader in the middle of the page
+centerLoader: true
 ```
 
 ## Advanced usage examples
